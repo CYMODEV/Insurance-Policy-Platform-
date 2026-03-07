@@ -1,0 +1,1622 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  ShieldCheck, Car, Activity, Wallet, AlertTriangle, 
+  CheckCircle, FileText, ChevronRight, Settings,
+  MapPin, Shield, Zap, Lock, Database, Share2, BarChart3, Users, Wrench, Map,
+  Loader2, Cpu, FileCheck, Sliders, IdCard, QrCode, Landmark, TrendingUp,
+  CreditCard, ArrowRightLeft, Trophy, Globe, Radar, Video, Terminal, RadioReceiver,
+  Thermometer, BatteryCharging, Network, GaugeCircle, UserRound, Fingerprint, HardDrive,
+  Home, HeartPulse, Laptop, Building, Pickaxe, Scale, ShieldAlert, Gavel, Vote, Server,
+  ZapOff, LockKeyhole, Nfc, WifiOff, Banknote, ScanLine, DatabaseBackup, Award, Layers, Target,
+  X, Umbrella, Briefcase, CloudRain, ShieldPlus, Dog, Gem, Pill, Stethoscope, Smile, Sparkles,
+  Smartphone, Monitor, DownloadCloud, FileSignature, CheckSquare, ArrowLeft, ClipboardList, Send, UserPlus, Inbox,
+  ShieldOff, ArrowDownToLine, Receipt, PlusCircle, Webhook, Code, Key, GitPullRequest, Beaker,
+  BadgeCheck, BookOpen, Building2
+} from 'lucide-react';
+
+// --- CUSTOM STYLES FOR ERGONOMIC GLASSMORPHISM & ANIMATION ---
+const glassStyles = `
+  .glass-panel {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 1px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3), 
+      inset 1px 1px 2px rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+  }
+  .glass-panel-highlight {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(37, 99, 235, 0.04) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid rgba(147, 197, 253, 0.3);
+    border-left: 1px solid rgba(147, 197, 253, 0.15);
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+    box-shadow: 
+      0 12px 40px rgba(0, 0, 0, 0.4), 
+      inset 1px 1px 3px rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+  }
+  .glass-input {
+    background: rgba(11, 16, 30, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+    color: white;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+  }
+  .glass-input:focus {
+    background: rgba(15, 23, 42, 0.8);
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 12px rgba(59, 130, 246, 0.2);
+    outline: none;
+  }
+  .sleek-btn {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(37, 99, 235, 0.7) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(147, 197, 253, 0.3);
+    border-bottom: 1px solid rgba(30, 58, 138, 0.6);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    border-radius: 16px;
+  }
+  .sleek-btn:hover {
+    background: linear-gradient(135deg, rgba(96, 165, 250, 0.95) 0%, rgba(59, 130, 246, 0.8) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  }
+  .sleek-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.3), inset 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  .skeuo-led {
+    background: radial-gradient(circle at 30% 30%, #34d399, #065f46);
+    box-shadow: 0 0 12px #34d399, inset 2px 2px 4px rgba(255,255,255,0.6), inset -2px -2px 4px rgba(0,0,0,0.6);
+  }
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+  .scanline {
+    width: 100%;
+    height: 100px;
+    z-index: 10;
+    position: absolute;
+    pointer-events: none;
+    background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(59,130,246,0.2) 50%, rgba(0,0,0,0) 100%);
+    opacity: 0.1;
+    animation: scanline 6s linear infinite;
+  }
+  @keyframes scanline {
+    0% { top: -100px; }
+    100% { top: 100%; }
+  }
+
+  /* --- SKEUOMORPHIC CPURSE STYLES --- */
+  .skeuo-leather {
+    background: linear-gradient(135deg, #4a3320 0%, #2e1d13 100%);
+    box-shadow: 
+      inset 0 0 20px rgba(0,0,0,0.8),
+      0 10px 30px rgba(0,0,0,0.6),
+      inset 2px 2px 4px rgba(255,255,255,0.1);
+    border-radius: 24px;
+    position: relative;
+    border: 1px solid #1a100a;
+  }
+  .skeuo-stitch {
+    position: absolute;
+    inset: 8px;
+    border: 1.5px dashed rgba(200, 160, 120, 0.4);
+    border-radius: 16px;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .skeuo-metal {
+    background: linear-gradient(to bottom, #e0e0e0 0%, #a0a0a0 50%, #808080 51%, #c0c0c0 100%);
+    border: 1px solid #505050;
+    box-shadow: 
+      inset 0 2px 3px rgba(255,255,255,0.8),
+      inset 0 -1px 2px rgba(0,0,0,0.5),
+      0 4px 8px rgba(0,0,0,0.4);
+    border-radius: 8px;
+    color: #1a1a1a;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+  }
+  .skeuo-metal-inset {
+    background: linear-gradient(to bottom, #808080 0%, #a0a0a0 50%, #e0e0e0 100%);
+    box-shadow: inset 0 3px 6px rgba(0,0,0,0.6);
+  }
+  .e-ink-display {
+    background-color: #e5e7e1;
+    color: #111;
+    font-family: monospace;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+    border: 2px solid #333;
+    border-radius: 4px;
+  }
+`;
+
+const DynamicLogo = ({ className = "" }) => (
+  <div className={`relative flex items-center justify-center w-12 h-12 group ${className}`}>
+    {/* Ambient Blue Halo */}
+    <div className="absolute inset-[-8px] bg-gradient-to-tr from-blue-600 to-cyan-400 rounded-full opacity-20 blur-md group-hover:opacity-50 group-hover:scale-110 transition-all duration-700 animate-[pulse_3s_ease-in-out_infinite] z-0"></div>
+    
+    {/* GOLD OUTER RING - REDESIGNED */}
+    <div className="absolute inset-[-4px] rounded-full border-[1.5px] border-amber-400/40 shadow-[0_0_15px_rgba(251,191,36,0.3),inset_0_0_8px_rgba(251,191,36,0.2)] animate-[spin_12s_linear_infinite] group-hover:border-amber-300 group-hover:shadow-[0_0_20px_rgba(251,191,36,0.5)] z-10">
+      {/* Decorative Gold Node on the ring */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-amber-300 rounded-full shadow-[0_0_10px_#fbbf24]"></div>
+    </div>
+    
+    {/* Inner Blue Orbit (Reverse) */}
+    <div className="absolute inset-[1px] rounded-full border border-blue-400/30 border-dotted animate-[spin_6s_linear_infinite_reverse] group-hover:border-blue-300 z-10"></div>
+    
+    {/* Solid Glass Core */}
+    <div className="absolute inset-[3px] rounded-full glass-panel flex items-center justify-center overflow-hidden border border-white/20 shadow-[0_0_20px_rgba(59,130,246,0.3)] z-20 group-hover:rotate-12 group-hover:scale-105 transition-all duration-500">
+      {/* Sweeping Blue Energy Effect */}
+      <div className="absolute w-[200%] h-[200%] bg-[conic-gradient(from_90deg,transparent_0_280deg,rgba(59,130,246,0.8)_360deg)] animate-[spin_2.5s_linear_infinite] opacity-60"></div>
+      {/* Dark Inner Core */}
+      <div className="absolute inset-[2px] rounded-full bg-[#0a0c10] shadow-[inset_0_0_10px_rgba(0,0,0,0.8)] flex items-center justify-center">
+         <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse shadow-[0_0_8px_#60a5fa]"></div>
+      </div>
+    </div>
+  </div>
+);
+
+// Helper component for message boxes
+const ToastMessage = ({ message, onClose }) => {
+  if (!message) return null;
+  return (
+    <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[200] w-11/12 max-w-sm">
+      <div className="glass-panel-highlight bg-blue-900/90 border border-blue-400/50 p-4 rounded-xl flex items-start gap-3 shadow-2xl animate-in slide-in-from-top-4">
+        <AlertTriangle className="text-yellow-400 shrink-0 mt-0.5" size={20} />
+        <p className="text-sm font-medium text-white flex-1">{message}</p>
+        <button onClick={onClose} className="text-white/50 hover:text-white transition-colors">
+          <X size={18} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('onboarding');
+  const [isKycVerified, setIsKycVerified] = useState(false);
+  const [hasPolicy, setHasPolicy] = useState(false);
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  
+  const [registryView, setRegistryView] = useState('identity'); 
+  const [isMobileView, setIsMobileView] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  // State for Omni-Policies
+  const [selectedAssetType, setSelectedAssetType] = useState('auto');
+  const [policyStep, setPolicyStep] = useState('type'); 
+  const [policyConfig, setPolicyConfig] = useState({ coverage: '100k/300k', deductible: 500, tier: 'standard' });
+  const [selectedAddons, setSelectedAddons] = useState([]);
+  const [generatedHash, setGeneratedHash] = useState('');
+  
+  // Agent Node Engine State
+  const [agentTab, setAgentTab] = useState('dashboard');
+  const [agentView, setAgentView] = useState('metrics'); 
+  const [agentDraftStep, setAgentDraftStep] = useState('client_info');
+  const [clientDid, setClientDid] = useState('');
+  
+  // Custom Pools State
+  const [customCategories, setCustomCategories] = useState([
+    { id: 'cat_drone', name: 'Autonomous Drone Fleet', status: 'Pending DAO Approval', oracle: 'FAA-Radar-API: wss://...', premium: 250 },
+    { id: 'cat_gig', name: 'Gig Worker Income', status: 'Active', oracle: 'StripeConnect / Plaid', premium: 45 }
+  ]);
+  const [newCatForm, setNewCatForm] = useState({ name: '', oracle: '', fields: '', compliance: '', premium: '' });
+  const [apiKeys, setApiKeys] = useState([
+    { id: 'key_1', name: 'Agency CRM Sync (Salesforce)', key: 'epol_sk_live_9f8a...3b2c', lastUsed: '2 mins ago' }
+  ]);
+
+  const [pendingAgentQuote, setPendingAgentQuote] = useState(null);
+  const [complianceChecked, setComplianceChecked] = useState({ reg1: false, reg2: false });
+  const [appData, setAppData] = useState({ field1: '', field2: '' });
+  const [isVerifyingData, setIsVerifyingData] = useState(false);
+  const [isDataVerified, setIsDataVerified] = useState(false);
+
+  const [balances, setBalances] = useState({ usdB: 3500.00, tokenYield: 120.5, stakedBonds: 0, dataYield: 14.50 });
+  const [premium, setPremium] = useState({ base: 100, dynamic: 82.50 });
+  const [showFiatRamp, setShowFiatRamp] = useState(false);
+  const [fiatAmount, setFiatAmount] = useState(500);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const [stakingModal, setStakingModal] = useState({ isOpen: false, pool: '', apy: '' });
+  const [stakeAmt, setStakeAmt] = useState(100);
+  const [claimStatus, setClaimStatus] = useState('idle'); 
+
+  const [offlineMode, setOfflineMode] = useState(false);
+  const [showBearerNote, setShowBearerNote] = useState(false);
+  const [bearerTTL, setBearerTTL] = useState(299); 
+
+  const [stewardshipScore, setStewardshipScore] = useState(85); 
+  const [pendingTasks, setPendingTasks] = useState(3);
+  const [nodeActive, setNodeActive] = useState(false);
+  const [zkProofs, setZkProofs] = useState(1420);
+  const [mitigationBounties, setMitigationBounties] = useState([
+    { id: 1, text: "Install OBD-II Firmware Update", reward: 25, type: 'auto', done: false },
+    { id: 2, text: "Verify Home Smoke Alarms via IoT", reward: 15, type: 'home', done: false }
+  ]);
+
+  const [sensorConfig, setSensorConfig] = useState({ primary: true, environmental: false, biometric: false, network: true });
+  const [harvestLogs, setHarvestLogs] = useState([]);
+  const logContainerRef = useRef(null);
+
+  const assetMeta = {
+    auto: { 
+      icon: Car, label: 'Mobility', sub: 'Telematics Data', defaultAnchor: 'VIN: 1G1RD6E...', metricLabel: 'Speed', getPrimaryVal: (t) => Math.floor(t.auto.speed),
+      appFields: ['Driver License #', 'Primary Garaging Zip'], compliance: ['DMV MVR Pull Consent', 'State Telematics Data Act']
+    },
+    home: { 
+      icon: Building, label: 'Property', sub: 'IoT Home Sensors', defaultAnchor: 'GeoHash: dpz83...', metricLabel: 'Temp', getPrimaryVal: (t) => t.home.temp,
+      appFields: ['Property Deed / Title Hash', 'Primary Usage Type'], compliance: ['FCRA Data Processing', 'Local Municipal Zoning Check']
+    },
+    health: { 
+      icon: HeartPulse, label: 'Bio-Metric', sub: 'Wearable Oracles', defaultAnchor: 'AppleHealth: UUID-8F...', metricLabel: 'BPM', getPrimaryVal: (t) => Math.floor(t.health.bpm),
+      appFields: ['Primary Care NPI', 'Date of Birth'], compliance: ['HIPAA Interoperability Consent', 'Biometric Privacy Act (BIPA)']
+    },
+    cyber: { 
+      icon: Laptop, label: 'Cyber', sub: 'Smart Contract / Wallet', defaultAnchor: '0x71C...3E4A', metricLabel: 'Network Pings', getPrimaryVal: (t) => t.cyber.pings,
+      appFields: ['Primary ENS / Wallet', 'Jurisdiction'], compliance: ['OFAC Sanctions Screening', 'KYC/AML Oracle Validation']
+    },
+    property: { 
+      icon: Gem, label: 'Valuables', sub: 'RFID & Appraisals', defaultAnchor: 'RFID: 04:B2:7A...', metricLabel: 'Movement Risk', getPrimaryVal: (t) => Math.floor(t.property.movement),
+      appFields: ['Appraisal Certificate Hash', 'Item Serial / Ref #'], compliance: ['UCC Article 2 Compliance', 'Global Stolen Art Database']
+    },
+    pet: { 
+      icon: Dog, label: 'Pets', sub: 'Microchip & Health', defaultAnchor: 'Microchip: 98102...', metricLabel: 'Activity Level', getPrimaryVal: (t) => Math.floor(t.pet.activity),
+      appFields: ['Vet Clinic ID', 'Breed / Microchip Reg'], compliance: ['Municipal Pet Licensing Check', 'Animal Welfare Act Tracking']
+    },
+    medical: { 
+      icon: Stethoscope, label: 'Medical', sub: 'EHR & Clinical Data', defaultAnchor: 'EHR-FHIR: 10293...', metricLabel: 'EHR Syncs', getPrimaryVal: (t) => t.medical.ehrUpdates,
+      appFields: ['National Provider Identifier', 'EHR System (Epic/Cerner)'], compliance: ['HITECH Act Data Release', '21st Century Cures Act Interop']
+    },
+    rx: { 
+      icon: Pill, label: 'Pharmacy', sub: 'Smart Rx Dispensers', defaultAnchor: 'ScriptID: RX-772...', metricLabel: 'Adherence %', getPrimaryVal: (t) => Math.floor(t.rx.adherence),
+      appFields: ['Pharmacy NPI', 'Prescriber ID'], compliance: ['State PDMP Database Sync', 'FDA Controlled Substance Tracking']
+    },
+    dental: { 
+      icon: Smile, label: 'Dental', sub: 'Smart Brush IoT', defaultAnchor: 'SmartBrush: MAC-88...', metricLabel: 'Brush Sessions', getPrimaryVal: (t) => t.dental.brushCount,
+      appFields: ['Primary Dentist NPI', 'Last Radiograph Date'], compliance: ['HIPAA Dental Record Release', 'State Dental Board Sync']
+    },
+    employment: { 
+      icon: Briefcase, label: 'Employment', sub: 'Income & Job Security', defaultAnchor: 'PayrollAPI: ADP-88...', metricLabel: 'Days Active', getPrimaryVal: (t) => t.employment.daysActive,
+      appFields: ['Employer EIN', 'Payroll Provider (ADP/Workday)'], compliance: ['FCRA Employment Verification', 'IRS Form 4506-C Income Pull']
+    }
+  };
+
+  const [telemetry, setTelemetry] = useState({
+    auto: { speed: 0, gForce: 1.0, score: 85, metric1: 'Tire PSI', val1: 34, metric2: 'Brake Health', val2: '82%' },
+    home: { temp: 72, humidity: 45, score: 92, metric1: 'Security Uptime', val1: '99.9%', metric2: 'HVAC Load', val2: 'Low' },
+    health: { bpm: 75, hrv: 62, score: 88, metric1: 'Sleep Cycle', val1: '7.2h', metric2: 'Activity', val2: 'Active' },
+    cyber: { pings: 120, threats: 0, score: 99, metric1: 'Firewall', val1: 'Active', metric2: 'Node Sync', val2: '100%' },
+    property: { movement: 0, status: 100, score: 96, metric1: 'RFID Ping', val1: 'Active', metric2: 'Vault Status', val2: 'Secured' },
+    pet: { activity: 45, rest: 55, score: 92, metric1: 'Daily Steps', val1: '4.2k', metric2: 'GPS Geofence', val2: 'In Bounds' },
+    medical: { ehrUpdates: 2, score: 94, metric1: 'Lab Status', val1: 'Normal', metric2: 'Next Visit', val2: '3 Mos' },
+    rx: { adherence: 95, score: 98, metric1: 'Next Refill', val1: '12 Days', metric2: 'Contraindications', val2: 'None' },
+    dental: { brushCount: 2, score: 89, metric1: 'Gum Health', val1: 'Good', metric2: 'Pressure Sensor', val2: 'Optimal' },
+    employment: { daysActive: 312, score: 95, metric1: 'Industry Risk', val1: 'Low', metric2: 'Income Stream', val2: 'Verified' }
+  });
+
+  useEffect(() => {
+    if (activeTab === 'dashboard' && hasPolicy) {
+      const interval = setInterval(() => {
+        setTelemetry(prev => {
+          const newState = { ...prev };
+          if (selectedAssetType === 'auto') {
+            newState.auto.speed = Math.max(0, Math.min(85, prev.auto.speed + (Math.random() * 6 - 3)));
+            newState.auto.gForce = Math.max(0.8, Math.min(2.5, prev.auto.gForce + (Math.random() * 0.2 - 0.1)));
+          } else if (selectedAssetType === 'health') {
+            newState.health.bpm = Math.max(60, Math.min(120, prev.health.bpm + (Math.random() * 4 - 2)));
+          } else if (selectedAssetType === 'cyber') {
+            newState.cyber.pings += Math.floor(Math.random() * 5);
+          } else if (selectedAssetType === 'property') {
+            newState.property.movement = Math.floor(Math.max(0, Math.min(100, prev.property.movement + (Math.random() * 10 - 5))));
+          } else if (selectedAssetType === 'pet') {
+            newState.pet.activity = Math.max(10, Math.min(100, prev.pet.activity + (Math.random() * 8 - 4)));
+          } else if (selectedAssetType === 'medical') {
+            newState.medical.ehrUpdates = Math.max(1, prev.medical.ehrUpdates + (Math.random() > 0.9 ? 1 : 0));
+          } else if (selectedAssetType === 'rx') {
+            newState.rx.adherence = Math.max(50, Math.min(100, prev.rx.adherence + (Math.random() * 2 - 1)));
+          } else if (selectedAssetType === 'employment') {
+            newState.employment.daysActive = prev.employment.daysActive + (Math.random() > 0.95 ? 1 : 0);
+          }
+          return newState;
+        });
+
+        if(nodeActive) {
+          setBalances(prev => ({ ...prev, tokenYield: prev.tokenYield + 0.005 }));
+          setZkProofs(prev => prev + 1);
+        }
+      }, 1500);
+      return () => clearInterval(interval);
+    }
+  }, [activeTab, hasPolicy, selectedAssetType, nodeActive]);
+
+  useEffect(() => {
+    if (activeTab === 'data') {
+      const anySensorActive = sensorConfig.primary || sensorConfig.environmental || sensorConfig.biometric || sensorConfig.network;
+      if (!anySensorActive) return;
+
+      const logInterval = setInterval(() => {
+        const hash = '0x' + Array.from({length: 16}, () => Math.floor(Math.random()*16).toString(16)).join('');
+        const size = (Math.random() * 5 + 1).toFixed(2);
+        
+        let typeStr = "SYS_PING";
+        const types = [];
+        if (sensorConfig.primary) types.push(`${selectedAssetType.toUpperCase()}_PRI`);
+        if (sensorConfig.environmental) types.push(`ENV_LIDAR`);
+        if (sensorConfig.biometric) types.push(`BIO_ORACLE`);
+        if (sensorConfig.network) types.push(`NET_NODE`);
+        
+        if (types.length > 0) typeStr = types[Math.floor(Math.random() * types.length)];
+
+        const newLog = `[ZKP] ${typeStr} | ${size}KB | ${hash}`;
+        
+        setHarvestLogs(prev => {
+          const updated = [...prev, newLog];
+          if(updated.length > 8) updated.shift();
+          return updated;
+        });
+        setBalances(prev => ({ ...prev, dataYield: prev.dataYield + 0.002 }));
+      }, 1500);
+      return () => clearInterval(logInterval);
+    }
+  }, [activeTab, sensorConfig, selectedAssetType]);
+
+  useEffect(() => {
+    let interval;
+    if (showBearerNote && bearerTTL > 0) {
+      interval = setInterval(() => {
+        setBearerTTL(prev => prev - 1);
+      }, 1000);
+    } else if (bearerTTL <= 0) {
+      setShowBearerNote(false);
+      showToast("Offline Bearer Note Expired.");
+      setBearerTTL(299);
+    }
+    return () => clearInterval(interval);
+  }, [showBearerNote, bearerTTL]);
+
+  useEffect(() => {
+    const assetScore = telemetry[selectedAssetType].score;
+    const discount = ((assetScore * 0.5) + (stewardshipScore * 0.5)) * 0.4; 
+    const discountAmt = (premium.base * discount) / 100;
+    setPremium(prev => ({ ...prev, dynamic: (prev.base - discountAmt).toFixed(2) }));
+  }, [telemetry, stewardshipScore, premium.base, selectedAssetType]);
+
+  const handleKYCSubmit = (e) => {
+    e.preventDefault();
+    setIsKycVerified(true);
+    setActiveTab('mint');
+    setPolicyStep('type');
+  };
+
+  const handleCompleteStewardTask = () => {
+    if (pendingTasks > 0) {
+      setPendingTasks(p => p - 1);
+      setStewardshipScore(p => Math.min(100, p + 5));
+      setBalances(p => ({...p, tokenYield: p.tokenYield + 2.5}));
+      showToast("Stewardship task cryptographically verified. +2.5 $SHIELD added to wallet.");
+    }
+  };
+
+  const getEstimatedPremium = () => {
+    let base = 100;
+    switch(selectedAssetType) {
+      case 'home': base = 150; break;
+      case 'cyber': base = 200; break;
+      case 'health': base = 120; break;
+      case 'medical': base = 180; break;
+      case 'property': base = 45; break;
+      case 'pet': base = 60; break;
+      case 'rx': base = 40; break;
+      case 'dental': base = 35; break;
+      case 'employment': base = 85; break;
+      default: base = 100; break;
+    }
+    
+    if (policyConfig.tier === 'premium') base *= 1.5;
+    if (policyConfig.deductible === 250) base += 40;
+    if (policyConfig.deductible === 1000) base -= 30;
+
+    const addonCost = selectedAddons.reduce((acc, addonId) => {
+      const addonDef = availableAddons[selectedAssetType].find(a => a.id === addonId);
+      return acc + (addonDef ? addonDef.price : 0);
+    }, 0);
+
+    return Math.floor(base + addonCost);
+  };
+
+  const handleVerifyApplication = () => {
+    if (!appData.field1 || !appData.field2) {
+      showToast("Please provide all required documentation to verify.");
+      return;
+    }
+    setIsVerifyingData(true);
+    setTimeout(() => {
+      setIsVerifyingData(false);
+      setIsDataVerified(true);
+      showToast("Oracle verification successful! Data anchored via ZK-Proof.");
+    }, 2500);
+  };
+
+  const handleGeneratePolicy = () => {
+    if (!isDataVerified) {
+      showToast("You must verify your application data before binding.");
+      return;
+    }
+    if (!complianceChecked.reg1 || !complianceChecked.reg2) {
+      showToast("You must agree to all regulatory terms before binding.");
+      return;
+    }
+    
+    setPolicyStep('generating');
+    const finalPremium = getEstimatedPremium();
+    setTimeout(() => {
+      setGeneratedHash('0x' + Array.from({length: 40}, () => Math.floor(Math.random()*16).toString(16)).join(''));
+      setPremium(prev => ({ ...prev, base: finalPremium }));
+      setPolicyStep('ready');
+      setPendingAgentQuote(null); 
+    }, 4000);
+  };
+
+  const handleDispatchAgentQuote = () => {
+    const finalPrem = getEstimatedPremium();
+    setPendingAgentQuote({
+      assetType: selectedAssetType,
+      config: policyConfig,
+      addons: selectedAddons,
+      premium: finalPrem,
+      agentId: 'BrokerNode_0x4A9'
+    });
+    showToast("Encrypting payload and dispatching to client wallet...");
+    setAgentDraftStep('dispatched');
+  };
+
+  const loadAgentQuote = () => {
+    if (!pendingAgentQuote) return;
+    setSelectedAssetType(pendingAgentQuote.assetType);
+    setPolicyConfig(pendingAgentQuote.config);
+    setSelectedAddons(pendingAgentQuote.addons);
+    setPremium(prev => ({...prev, base: pendingAgentQuote.premium}));
+    setPolicyStep('compliance'); 
+    showToast("Loaded Agent Quote Parameters.");
+  };
+
+  const toggleAdminMode = () => {
+    setIsAdminMode(!isAdminMode);
+    if (!isAdminMode) {
+      showToast("Agent Portal Activated");
+      setAgentTab('dashboard');
+      setAgentView('metrics');
+    } else {
+      showToast("Returned to Client View");
+    }
+  };
+
+  const handleProposeCategory = (e) => {
+    e.preventDefault();
+    if (!newCatForm.name || !newCatForm.oracle) return;
+    setIsProcessing(true);
+    setTimeout(() => {
+      setCustomCategories([{
+        id: `cat_${Date.now()}`,
+        name: newCatForm.name,
+        oracle: newCatForm.oracle,
+        premium: newCatForm.premium || 100,
+        status: 'Pending DAO Approval'
+      }, ...customCategories]);
+      setNewCatForm({ name: '', oracle: '', fields: '', compliance: '', premium: '' });
+      setIsProcessing(false);
+      showToast("Custom Policy Schema submitted to decentralized consensus for verification.");
+    }, 1500);
+  };
+
+  const handleGenerateApiKey = () => {
+    setIsProcessing(true);
+    setTimeout(() => {
+      setApiKeys([...apiKeys, {
+        id: `key_${Date.now()}`,
+        name: 'New Integration Key',
+        key: `epol_sk_live_${Math.floor(Math.random()*16777215).toString(16)}...`,
+        lastUsed: 'Never'
+      }]);
+      setIsProcessing(false);
+      showToast("New Web3 API Key generated successfully.");
+    }, 1000);
+  };
+
+  const handleGoHome = () => {
+    setIsAdminMode(false);
+    setIsKycVerified(false);
+    setHasPolicy(false);
+    setActiveTab('onboarding');
+    setPolicyStep('type');
+    setPendingAgentQuote(null);
+    setClaimStatus('idle');
+    showToast("Returned to Directory Frontpage");
+  };
+
+  const handleParametricClaim = () => {
+    setClaimStatus('processing');
+    setTimeout(() => {
+      setClaimStatus('approved');
+      setBalances(prev => ({ ...prev, usdB: prev.usdB + 1500 }));
+      showToast("Oracle condition verified! 1,500 USD-B payout routed to ePurse.");
+    }, 3500);
+  };
+
+  const handleStakeCapital = (e) => {
+    e.preventDefault();
+    if (balances.usdB < stakeAmt) {
+      showToast("Insufficient USD-B balance.");
+      return;
+    }
+    setIsProcessing(true);
+    setTimeout(() => {
+      setBalances(prev => ({ ...prev, usdB: prev.usdB - stakeAmt, stakedBonds: prev.stakedBonds + Number(stakeAmt) }));
+      setIsProcessing(false);
+      setStakingModal({ isOpen: false, pool: '', apy: '' });
+      showToast(`Successfully underwrote ${stakeAmt} USD-B into ${stakingModal.pool}.`);
+    }, 2000);
+  };
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const availableAddons = {
+    auto: [
+      { id: 'rideshare', label: 'Rideshare DAO Endorsement', desc: 'Coverage extends to P2P network driving', price: 45, icon: Briefcase },
+      { id: 'glass', label: 'Parametric Glass', desc: 'Instant payout on smart-glass break detection', price: 12, icon: ShieldPlus }
+    ],
+    home: [
+      { id: 'flood', label: 'Parametric Flood', desc: 'Auto-claim triggered by NOAA water level oracles', price: 65, icon: CloudRain },
+      { id: 'solar', label: 'Micro-Grid Protection', desc: 'Covers battery walls & solar arrays', price: 28, icon: Zap }
+    ],
+    health: [
+      { id: 'critical', label: 'Critical Illness Escrow', desc: 'Instant unlock on verified diagnostic oracle', price: 80, icon: HeartPulse },
+      { id: 'evac', label: 'Global Heli-Evac', desc: 'Decentralized drone/heli rescue dispatch', price: 35, icon: MapPin }
+    ],
+    cyber: [
+      { id: 'ransomware', label: 'Ransomware Escrow', desc: 'Automated negotiation & key retrieval protocol', price: 120, icon: Lock },
+      { id: 'social', label: 'Social Engineering', desc: 'Covers verified phishing fund-drainage', price: 55, icon: Users }
+    ],
+    property: [
+      { id: 'loss', label: 'Mysterious Disappearance', desc: 'Coverage for unverified loss', price: 15, icon: AlertTriangle },
+      { id: 'transit', label: 'Transit Escrow', desc: 'Coverage during shipping/travel', price: 10, icon: MapPin }
+    ],
+    pet: [
+      { id: 'wellness', label: 'Preventative Wellness', desc: 'Routine vet visits & vaccines', price: 25, icon: HeartPulse },
+      { id: 'liability', label: 'Third-Party Liability', desc: 'Coverage for damage by pet', price: 15, icon: ShieldAlert }
+    ],
+    medical: [
+      { id: 'specialist', label: 'Specialist DAO Escrow', desc: 'Global borderless specialist access', price: 60, icon: Stethoscope },
+      { id: 'telehealth', label: 'Zero-Knowledge Telehealth', desc: '24/7 decentralized secure triage', price: 15, icon: Video }
+    ],
+    rx: [
+      { id: 'orphan', label: 'Orphan Drug Pool', desc: 'Coverage for rare/specialty medications', price: 25, icon: ShieldPlus },
+      { id: 'drone', label: 'Autonomous Drone Delivery', desc: 'Priority urgent Rx routing', price: 10, icon: MapPin }
+    ],
+    dental: [
+      { id: 'ortho', label: 'Orthodontic Vault', desc: 'Escrow for aligners and braces', price: 40, icon: Smile },
+      { id: 'cosmetic', label: 'Cosmetic Add-on', desc: 'Annual preventative whitening cover', price: 15, icon: Sparkles }
+    ],
+    employment: [
+      { id: 'severance', label: 'Severance Multiplier', desc: 'Boosts payout duration upon layoff', price: 35, icon: TrendingUp },
+      { id: 'coaching', label: 'Career Transition Escrow', desc: 'Funds for upskilling/certifications', price: 20, icon: Users }
+    ]
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0b101e] text-slate-100 font-sans selection:bg-blue-500/30 relative overflow-hidden">
+      <style>{glassStyles}</style>
+
+      {/* AMBIENT BACKGROUND */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600/20 blur-[100px] animate-float"></div>
+        <div className="absolute top-[20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-cyan-600/10 blur-[120px] animate-float" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[50%] rounded-full bg-orange-600/20 blur-[100px] animate-float" style={{animationDelay: '4s'}}></div>
+      </div>
+      
+      {/* Toast Notification */}
+      <ToastMessage message={toastMessage} onClose={() => setToastMessage(null)} />
+
+      {/* TOP NAV */}
+      <nav className="sticky top-0 z-50 glass-panel border-b-0 border-white/5 bg-[#0b101e]/50 rounded-none">
+        <div className={`mx-auto px-4 h-24 flex items-center justify-between transition-all duration-500 ${isMobileView ? 'max-w-md' : 'max-w-6xl'}`}>
+          <div className="flex items-center gap-4 group" onClick={toggleAdminMode} style={{cursor: 'pointer'}}>
+            <DynamicLogo />
+            {/* REDESIGNED TITLE */}
+            <div className="flex flex-col">
+              <div className="flex items-baseline leading-none">
+                <span className="text-3xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-blue-600 italic mr-0.5">e</span>
+                <span className="text-2xl font-bold tracking-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">Policy</span>
+              </div>
+              <div className="h-[2px] w-full bg-gradient-to-r from-blue-500 via-amber-400 to-transparent rounded-full opacity-60"></div>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-1.5 mr-2">
+              <div className="glass-panel p-1 rounded-lg flex items-center gap-1 border-white/10">
+                <button onClick={() => setIsMobileView(false)} className={`p-1.5 rounded-md transition-colors ${!isMobileView ? 'bg-blue-500/30 text-blue-300' : 'text-slate-400 hover:text-slate-200'}`} title="Desktop View">
+                  <Monitor size={14} />
+                </button>
+                <button onClick={() => setIsMobileView(true)} className={`p-1.5 rounded-md transition-colors ${isMobileView ? 'bg-blue-500/30 text-blue-300' : 'text-slate-400 hover:text-slate-200'}`} title="Mobile View">
+                  <Smartphone size={14} />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div 
+                onClick={handleGoHome}
+                className={`w-12 h-12 rounded-[16px] glass-panel flex items-center justify-center text-sm font-bold shadow-[0_4px_10px_rgba(0,0,0,0.4)] cursor-pointer transition-transform active:translate-y-[2px] ${(activeTab === 'dashboard' || activeTab === 'onboarding' || (activeTab === 'mint' && policyStep === 'type')) && !isAdminMode ? 'border-blue-400 text-blue-300' : 'text-slate-300 hover:text-slate-100'}`}
+                title="Return to Main Directory"
+              >
+                <Home size={20} />
+              </div>
+              <div 
+                onClick={() => setActiveTab('registry')}
+                className={`w-12 h-12 rounded-[16px] glass-panel flex items-center justify-center text-sm font-bold shadow-[0_4px_10px_rgba(0,0,0,0.4)] cursor-pointer transition-transform active:translate-y-[2px] ${activeTab === 'registry' ? 'border-blue-400 text-blue-300' : 'text-slate-300 hover:text-slate-100'}`}
+                title="User Registry"
+              >
+                <UserRound size={20} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* MAIN VIEWPORT */}
+      <main className={`mx-auto p-4 pb-28 relative z-10 transition-all duration-500 ${isMobileView ? 'max-w-md' : 'max-w-6xl'}`}>
+        
+        {isAdminMode ? (
+          <div className="space-y-6 animate-in fade-in duration-500">
+            {/* AGENT DASHBOARD */}
+            {agentTab === 'dashboard' && (
+              <div className="animate-in fade-in duration-300">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                    <Briefcase className="text-yellow-400"/> Agent Command Center
+                  </h2>
+                  <button onClick={() => { setAgentTab('draft'); setAgentDraftStep('client_info'); setClientDid(''); }} className="glass-panel bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-yellow-500/30 transition-colors shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+                    <UserPlus size={16}/> New Quote
+                  </button>
+                </div>
+
+                {/* View Toggle */}
+                <div className="flex gap-2 mb-6 glass-panel p-1 rounded-xl w-full sm:w-fit overflow-x-auto whitespace-nowrap hide-scrollbar">
+                  <button onClick={() => setAgentView('metrics')} className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${agentView === 'metrics' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}>Metrics</button>
+                  <button onClick={() => setAgentView('roster')} className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${agentView === 'roster' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}>Client Roster</button>
+                  <button onClick={() => setAgentView('custom_pools')} className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all flex items-center gap-1.5 ${agentView === 'custom_pools' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}><Beaker size={14}/> Policy Studio</button>
+                  <button onClick={() => setAgentView('api_hub')} className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all flex items-center gap-1.5 ${agentView === 'api_hub' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}><Code size={14}/> Dev API</button>
+                  <button onClick={() => setAgentView('compliance')} className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all flex items-center gap-1.5 ${agentView === 'compliance' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}><BadgeCheck size={14}/> Compliance</button>
+                </div>
+
+                {agentView === 'metrics' && (
+                  <>
+                    <div className={`grid gap-4 mb-6 ${isMobileView ? 'grid-cols-2' : 'grid-cols-4'}`}>
+                      <div className="glass-panel rounded-2xl p-5 border-white/5">
+                        <div className="text-slate-400 text-[10px] uppercase tracking-widest mb-1">Active Clients</div>
+                        <div className="text-3xl font-mono font-bold text-white">142</div>
+                      </div>
+                      <div className="glass-panel rounded-2xl p-5 border-white/5">
+                        <div className="text-slate-400 text-[10px] uppercase tracking-widest mb-1">Book of Business</div>
+                        <div className="text-3xl font-mono font-bold text-emerald-400">$84.2k</div>
+                      </div>
+                      <div className="glass-panel rounded-2xl p-5 border-white/5">
+                        <div className="text-slate-400 text-[10px] uppercase tracking-widest mb-1">Yield / Commissions</div>
+                        <div className="text-3xl font-mono font-bold text-yellow-400">$6,150</div>
+                      </div>
+                      <div className="glass-panel rounded-2xl p-5 border-white/5">
+                        <div className="text-slate-400 text-[10px] uppercase tracking-widest mb-1">Pending Quotes</div>
+                        <div className="text-3xl font-mono font-bold text-blue-400">7</div>
+                      </div>
+                    </div>
+
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 relative z-10 flex items-center gap-2 mt-8">
+                      <ClipboardList size={14}/> Recent Underwriting Activity
+                    </h3>
+                    <div className="space-y-3">
+                      {[
+                        { client: '0x4F2...9A1B', type: 'Cyber', status: 'Active', premium: '$240/mo' },
+                        { client: '0x9B1...3C4D', type: 'Mobility', status: 'Pending Sig', premium: '$110/mo' },
+                        { client: '0x1A2...8F9E', type: 'Property', status: 'Active', premium: '$65/mo' }
+                      ].map((act, i) => (
+                        <div key={i} className="glass-panel p-4 rounded-xl border border-white/5 flex justify-between items-center">
+                          <div>
+                            <div className="font-mono text-sm text-slate-200">{act.client}</div>
+                            <div className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">{act.type} Policy</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-bold text-emerald-400">{act.premium}</div>
+                            <div className={`text-[10px] uppercase tracking-widest mt-1 font-bold ${act.status === 'Active' ? 'text-emerald-500' : 'text-yellow-400'}`}>{act.status}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+                
+                {agentView === 'roster' && (
+                  <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div className="glass-panel rounded-2xl border border-white/5 overflow-hidden">
+                      <div className="grid grid-cols-4 p-4 bg-black/40 border-b border-white/5 text-[10px] text-slate-400 uppercase tracking-widest font-bold">
+                        <div className="col-span-2 sm:col-span-1">Client ID</div>
+                        <div className="hidden sm:block">Coverage</div>
+                        <div>Premium</div>
+                        <div className="text-right">Asset Health</div>
+                      </div>
+                      <div className="divide-y divide-white/5">
+                        {[
+                          { id: '0x88B...F3A1', type: 'Mobility', premium: 145, health: 92, icon: Car },
+                          { id: '0x2A1...C9D4', type: 'Health', premium: 110, health: 88, icon: HeartPulse },
+                          { id: '0x7F4...B2E1', type: 'Cyber', premium: 200, health: 99, icon: Laptop },
+                          { id: '0x3C9...D8F2', type: 'Property', premium: 65, health: 96, icon: Building },
+                          { id: '0x9E2...A1B3', type: 'Pet', premium: 45, health: 82, icon: Dog },
+                        ].map((client, i) => (
+                          <div key={i} className="grid grid-cols-4 p-4 items-center hover:bg-white/5 transition-colors cursor-pointer group">
+                            <div className="col-span-2 sm:col-span-1 font-mono text-sm text-blue-300 group-hover:text-blue-200">{client.id}</div>
+                            <div className="hidden sm:flex items-center gap-2 text-slate-300 text-sm">
+                              <client.icon size={14} className="text-slate-500"/> {client.type}
+                            </div>
+                            <div className="font-mono text-white text-sm">${client.premium}</div>
+                            <div className="text-right">
+                              <span className={`px-2 py-1 rounded-md text-xs font-bold ${client.health > 90 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
+                                {client.health}/100
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {agentView === 'custom_pools' && (
+                  <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-6">
+                    <div className="glass-panel bg-yellow-900/10 border border-yellow-500/20 p-5 rounded-2xl flex items-start gap-4">
+                      <Beaker className="text-yellow-400 shrink-0 mt-1" size={24}/>
+                      <div>
+                        <h3 className="font-bold text-white text-lg">Policy Creator Studio</h3>
+                        <p className="text-sm text-slate-400 mt-1">As a verified Agent Node, you can propose new Custom Risk Pools. Map external data oracles to dynamic premiums to create niche insurance products. Validated categories are minted to the decentralized protocol registry.</p>
+                      </div>
+                    </div>
+
+                    <div className={`grid gap-6 ${isMobileView ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                      <form onSubmit={handleProposeCategory} className="glass-panel p-6 rounded-2xl border border-white/5 space-y-4 relative">
+                        <h4 className="font-bold text-white mb-2 flex items-center gap-2"><PlusCircle size={16} className="text-yellow-400"/> Propose New Schema</h4>
+                        
+                        <div>
+                          <label className="block text-[10px] text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Category Name</label>
+                          <input type="text" required placeholder="e.g., Orbital Launch Escrow" value={newCatForm.name} onChange={e => setNewCatForm({...newCatForm, name: e.target.value})} className="w-full glass-input rounded-xl px-4 py-2.5 text-sm" />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Oracle API Endpoint</label>
+                          <input type="text" required placeholder="wss://api.spacex.com/telemetry" value={newCatForm.oracle} onChange={e => setNewCatForm({...newCatForm, oracle: e.target.value})} className="w-full glass-input rounded-xl px-4 py-2.5 text-sm font-mono" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Est. Premium (USD-B)</label>
+                            <input type="number" placeholder="500" value={newCatForm.premium} onChange={e => setNewCatForm({...newCatForm, premium: e.target.value})} className="w-full glass-input rounded-xl px-4 py-2.5 text-sm" />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Compliance Check</label>
+                            <select value={newCatForm.compliance} onChange={e => setNewCatForm({...newCatForm, compliance: e.target.value})} className="w-full glass-input rounded-xl px-3 py-2.5 text-sm text-slate-300">
+                              <option value="">Select Reg...</option>
+                              <option value="FAA">FAA Authorization</option>
+                              <option value="SEC">SEC Filing Check</option>
+                              <option value="KYC">Global KYC/AML</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Required Application Fields (CSV)</label>
+                          <input type="text" placeholder="Launch ID, Payload Weight" value={newCatForm.fields} onChange={e => setNewCatForm({...newCatForm, fields: e.target.value})} className="w-full glass-input rounded-xl px-4 py-2.5 text-sm" />
+                        </div>
+                        <button type="submit" disabled={isProcessing} className="w-full sleek-btn text-white font-bold py-3.5 mt-2 rounded-xl text-sm flex justify-center items-center gap-2">
+                          {isProcessing ? <><Loader2 size={16} className="animate-spin"/> Committing to DAG...</> : <><GitPullRequest size={16}/> Submit to DAO Consensus</>}
+                        </button>
+                      </form>
+
+                      <div className="glass-panel p-6 rounded-2xl border border-white/5 flex flex-col">
+                        <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-widest text-slate-400">My Proposed Pools</h4>
+                        <div className="space-y-3 flex-1 overflow-y-auto">
+                          {customCategories.map(cat => (
+                            <div key={cat.id} className="glass-panel bg-white/5 border border-white/5 rounded-xl p-4">
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="font-bold text-white">{cat.name}</div>
+                                <span className={`text-[9px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-md border ${cat.status === 'Active' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'}`}>
+                                  {cat.status}
+                                </span>
+                              </div>
+                              <div className="text-[10px] text-slate-400 font-mono break-all flex items-center gap-1.5">
+                                <Network size={12}/> {cat.oracle}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {agentView === 'api_hub' && (
+                  <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      
+                      {/* API Keys List */}
+                      <div className="md:col-span-2 glass-panel rounded-2xl p-6 border border-white/5">
+                        <div className="flex justify-between items-center mb-6">
+                          <h3 className="font-bold text-white flex items-center gap-2"><Key className="text-blue-400" size={18}/> Web3 API Keys</h3>
+                          <button onClick={handleGenerateApiKey} disabled={isProcessing} className="glass-panel bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/40 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
+                            {isProcessing ? <Loader2 size={12} className="animate-spin"/> : <PlusCircle size={12}/>} New Key
+                          </button>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          {apiKeys.map(k => (
+                            <div key={k.id} className="glass-panel bg-black/40 border border-white/5 rounded-xl p-4 flex justify-between items-center group">
+                              <div>
+                                <div className="text-sm font-bold text-slate-200 mb-1">{k.name}</div>
+                                <div className="text-xs font-mono text-slate-500 bg-white/5 px-2 py-1 rounded inline-block">{k.key}</div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-[10px] text-slate-500 uppercase tracking-widest">Last Used</div>
+                                <div className="text-xs text-slate-400">{k.lastUsed}</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Documentation Snippet */}
+                      <div className="glass-panel bg-[#0a0c10] border border-white/5 rounded-2xl p-5 relative overflow-hidden font-mono text-xs">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-emerald-400"></div>
+                        <h4 className="text-slate-400 font-sans font-bold uppercase tracking-widest text-[10px] mb-3">Quote Dispatch Endpoint</h4>
+                        <div className="text-blue-400 mb-1">POST <span className="text-white">/v1/quotes/dispatch</span></div>
+                        <pre className="text-slate-500 mt-4 overflow-x-auto">
+{`{
+  "client_did": "0x88B...F3A1",
+  "policy_class": "mobility",
+  "tier": "premium",
+  "deductible": 500,
+  "addons": ["rideshare"]
+}`}
+                        </pre>
+                        <div className="mt-4 pt-4 border-t border-white/5">
+                          <button className="text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1"><FileText size={14}/> View Full Docs</button>
+                        </div>
+                      </div>
+
+                      {/* Webhooks */}
+                      <div className="md:col-span-3 glass-panel rounded-2xl p-6 border border-white/5 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-xl glass-panel bg-blue-500/20 text-blue-300 flex items-center justify-center">
+                            <Webhook size={24} />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-white text-sm">Policy Lifecycle Webhooks</h3>
+                            <p className="text-xs text-slate-400 mt-0.5">Receive instant HTTP callbacks to your CRM when clients cryptographically sign quotes or file claims.</p>
+                          </div>
+                        </div>
+                        <button className="glass-panel border border-white/10 px-4 py-2 rounded-xl text-sm font-bold text-slate-300 hover:bg-white/5 transition-colors">
+                          Configure Endpoints
+                        </button>
+                      </div>
+
+                    </div>
+                  </div>
+                )}
+
+                {agentView === 'compliance' && (
+                  <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-6">
+                    <div className="glass-panel bg-emerald-900/10 border border-emerald-500/20 p-5 rounded-2xl flex items-start gap-4">
+                      <BadgeCheck className="text-emerald-400 shrink-0 mt-1" size={24}/>
+                      <div>
+                        <h3 className="font-bold text-white text-lg">Agent Compliance & Licensing</h3>
+                        <p className="text-sm text-slate-400 mt-1">Your cryptographic broker credentials and regulatory appointments are actively verified via Zero-Knowledge proofs against state department databases.</p>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="glass-panel p-5 rounded-2xl border border-white/5">
+                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Broker Credentials</h4>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                            <span className="text-sm text-slate-300">National Producer Number (NPN)</span>
+                            <span className="font-mono text-white text-sm">88392011</span>
+                          </div>
+                          <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                            <span className="text-sm text-slate-300">Errors & Omissions (E&O) Cover</span>
+                            <span className="text-emerald-400 text-xs font-bold px-2 py-1 bg-emerald-500/10 rounded-md">Verified Active</span>
+                          </div>
+                          <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                            <span className="text-sm text-slate-300">AML / KYC Status</span>
+                            <span className="text-emerald-400 text-xs font-bold px-2 py-1 bg-emerald-500/10 rounded-md">Cleared</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="glass-panel p-5 rounded-2xl border border-white/5">
+                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">State Appointments</h4>
+                        <div className="space-y-2">
+                          {['California (CA)', 'New York (NY)', 'Texas (TX)', 'Florida (FL)'].map((state, i) => (
+                            <div key={i} className="flex justify-between items-center glass-panel bg-white/5 p-2 rounded-lg">
+                              <span className="text-sm text-slate-200">{state}</span>
+                              <span className="text-[10px] uppercase tracking-widest font-bold text-emerald-400 flex items-center gap-1"><CheckCircle size={12}/> Good Standing</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* AGENT DRAFTING ENGINE */}
+            {agentTab === 'draft' && (
+              <div className="animate-in slide-in-from-right duration-300">
+                {/* Breadcrumb for Agent */}
+                <div className="flex justify-between items-center bg-[#0a0c10]/50 p-3 rounded-2xl border border-white/5 mb-4">
+                  <button onClick={() => {
+                    if(agentDraftStep === 'client_info') setAgentTab('dashboard');
+                    else if(agentDraftStep === 'type') setAgentDraftStep('client_info');
+                    else if(agentDraftStep === 'config') setAgentDraftStep('type');
+                    else if(agentDraftStep === 'review') setAgentDraftStep('config');
+                  }} className="text-slate-400 hover:text-white transition-colors flex items-center gap-1 text-xs font-bold">
+                    <ArrowLeft size={14}/> Back
+                  </button>
+                  <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold text-slate-500">
+                    <span className={agentDraftStep === 'client_info' ? 'text-yellow-400' : 'text-slate-600'}>Client</span>
+                    <ChevronRight size={10} />
+                    <span className={agentDraftStep === 'type' ? 'text-yellow-400' : 'text-slate-600'}>Class</span>
+                    <ChevronRight size={10} />
+                    <span className={agentDraftStep === 'config' ? 'text-yellow-400' : 'text-slate-600'}>Params</span>
+                    <ChevronRight size={10} />
+                    <span className={agentDraftStep === 'review' ? 'text-yellow-400' : 'text-slate-600'}>Dispatch</span>
+                  </div>
+                </div>
+
+                <div className="glass-panel rounded-3xl p-7 relative overflow-hidden">
+                   <div className="absolute top-0 right-0 w-40 h-40 bg-yellow-500/10 blur-3xl rounded-full"></div>
+
+                   {agentDraftStep === 'client_info' && (
+                     <div className="relative z-10">
+                        <h2 className="text-2xl font-bold mb-2 text-white">Client Identification</h2>
+                        <p className="text-sm text-slate-400 mb-6">Enter the client's decentralized identifier or wallet address to initiate underwriting.</p>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-xs font-medium text-slate-300 mb-1.5 ml-1">Client Wallet / ENS / DID</label>
+                            <input type="text" placeholder="e.g. 0x... or client.eth" value={clientDid} onChange={e => setClientDid(e.target.value)} className="w-full glass-input rounded-xl px-4 py-3 text-sm font-mono" />
+                          </div>
+                          <button onClick={() => {
+                            if(!clientDid) { showToast("Enter client ID to proceed"); return; }
+                            setAgentDraftStep('type');
+                          }} className="w-full sleek-btn text-white font-bold py-3.5 rounded-xl mt-4">Next: Select Policy Class</button>
+                        </div>
+                     </div>
+                   )}
+
+                   {agentDraftStep === 'type' && (
+                     <div className="relative z-10">
+                        <h2 className="text-2xl font-bold mb-2 text-white">Select Policy Class</h2>
+                        <p className="text-sm text-slate-400 mb-6">Choose the coverage type to quote for <span className="font-mono text-yellow-300">{clientDid}</span></p>
+                        <div className={`grid gap-4 ${isMobileView ? 'grid-cols-2' : 'grid-cols-3 md:grid-cols-5'}`}>
+                          {Object.entries(assetMeta).map(([typeId, meta]) => (
+                            <div key={typeId} onClick={() => { setSelectedAssetType(typeId); setSelectedAddons([]); setAgentDraftStep('config'); }} className="glass-panel bg-white/5 hover:bg-white/10 border-white/10 p-5 rounded-2xl cursor-pointer transition-all flex flex-col items-center text-center group shadow-[0_4px_15px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_25px_rgba(234,179,8,0.15)]">
+                              <meta.icon size={32} className="text-yellow-400 mb-3 group-hover:scale-110 transition-transform" />
+                              <div className="font-bold text-white text-sm">{meta.label}</div>
+                              <div className="text-[10px] text-slate-400 mt-1">{meta.sub}</div>
+                            </div>
+                          ))}
+                        </div>
+                     </div>
+                   )}
+
+                   {agentDraftStep === 'config' && (
+                     <div className="relative z-10">
+                        <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2"><Settings className="text-yellow-400"/> Configure Quote Parameters</h2>
+                        <div className="space-y-5">
+                          {/* Configuration inputs */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-slate-400 mb-1.5 ml-1">Limit Tier</label>
+                              <select className="w-full glass-input rounded-xl px-3 py-3 text-slate-200 text-sm" value={policyConfig.tier} onChange={(e) => setPolicyConfig({...policyConfig, tier: e.target.value})}>
+                                <option value="standard">Standard Limit</option>
+                                <option value="premium">Premium Limit</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-slate-400 mb-1.5 ml-1">Deductible</label>
+                              <select className="w-full glass-input rounded-xl px-3 py-3 text-slate-200 text-sm" value={policyConfig.deductible} onChange={(e) => setPolicyConfig({...policyConfig, deductible: Number(e.target.value)})}>
+                                <option value={1000}>1,000 USD-B</option>
+                                <option value={500}>500 USD-B</option>
+                                <option value={250}>250 USD-B</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Smart Addons */}
+                          <div>
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                              <Umbrella size={14} className="text-yellow-400"/> Recommended Endorsements
+                            </label>
+                            <div className="grid grid-cols-1 gap-3">
+                              {availableAddons[selectedAssetType].map(addon => {
+                                const isSelected = selectedAddons.includes(addon.id);
+                                return (
+                                  <div key={addon.id} onClick={() => {
+                                    if (isSelected) setSelectedAddons(selectedAddons.filter(id => id !== addon.id));
+                                    else setSelectedAddons([...selectedAddons, addon.id]);
+                                  }} className={`glass-panel p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${isSelected ? 'bg-yellow-500/10 border-yellow-500/40 shadow-[inset_0_0_15px_rgba(234,179,8,0.1)]' : 'bg-white/5 border-white/5 hover:border-white/20'}`}>
+                                    <div className="flex items-center gap-3">
+                                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isSelected ? 'bg-yellow-500/20 text-yellow-300' : 'bg-[#0a0c10] text-slate-500'}`}>
+                                        <addon.icon size={14} />
+                                      </div>
+                                      <div>
+                                        <div className={`text-sm font-bold ${isSelected ? 'text-white' : 'text-slate-300'}`}>{addon.label}</div>
+                                        <div className="text-[9px] text-slate-500 mt-0.5">{addon.desc}</div>
+                                      </div>
+                                    </div>
+                                    <div className="flex flex-col items-end gap-1">
+                                      <span className="text-xs font-mono font-bold text-emerald-400">+{addon.price}</span>
+                                      <div className={`w-8 h-4 rounded-full flex items-center p-0.5 transition-colors ${isSelected ? 'bg-yellow-500' : 'bg-slate-700'}`}>
+                                        <div className={`w-3 h-3 bg-white rounded-full shadow-sm transform transition-transform ${isSelected ? 'translate-x-4' : ''}`}></div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Estimator */}
+                          <div className="glass-panel-highlight bg-yellow-900/10 border border-yellow-500/30 rounded-2xl p-4 mt-6 flex justify-between items-center">
+                            <div>
+                              <div className="text-xs text-yellow-200/70 font-bold uppercase tracking-widest mb-1">Quote Estimate</div>
+                              <div className="text-2xl font-mono font-bold text-white drop-shadow-md">
+                                {getEstimatedPremium()} <span className="text-sm font-sans text-yellow-300">USD-B/mo</span>
+                              </div>
+                            </div>
+                            <button onClick={() => setAgentDraftStep('review')} className="sleek-btn text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 text-sm">
+                              Review Quote <ChevronRight size={16} />
+                            </button>
+                          </div>
+                        </div>
+                     </div>
+                   )}
+
+                   {agentDraftStep === 'review' && (
+                     <div className="relative z-10">
+                       <div className="flex justify-center mb-6">
+                         <div className="w-16 h-16 glass-panel bg-yellow-500/20 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(234,179,8,0.3)]">
+                           <FileSignature className="text-yellow-400" size={32} />
+                         </div>
+                       </div>
+                       <h2 className="text-2xl font-bold mb-6 text-center text-white">Review & Dispatch Quote</h2>
+                       
+                       <div className="glass-panel bg-black/30 rounded-2xl p-5 border border-white/5 space-y-4 mb-6">
+                         <div className="flex justify-between items-center pb-4 border-b border-white/10">
+                           <div className="text-xs text-slate-400 uppercase tracking-widest">Client Identity</div>
+                           <div className="font-mono text-sm text-yellow-300">{clientDid}</div>
+                         </div>
+                         <div className="flex justify-between items-center pb-4 border-b border-white/10">
+                           <div className="text-xs text-slate-400 uppercase tracking-widest">Policy Class</div>
+                           <div className="font-bold text-white flex items-center gap-2">
+                             {React.createElement(assetMeta[selectedAssetType].icon, { size: 14, className: "text-slate-400" })}
+                             {assetMeta[selectedAssetType].label} ({policyConfig.tier} Tier)
+                           </div>
+                         </div>
+                         <div className="flex justify-between items-center pb-4 border-b border-white/10">
+                           <div className="text-xs text-slate-400 uppercase tracking-widest">Deductible</div>
+                           <div className="font-mono text-white">{policyConfig.deductible} USD-B</div>
+                         </div>
+                         <div className="flex justify-between items-center pb-4 border-b border-white/10">
+                           <div className="text-xs text-slate-400 uppercase tracking-widest">Calculated Premium</div>
+                           <div className="font-mono font-bold text-emerald-400">{getEstimatedPremium()} USD-B/mo</div>
+                         </div>
+                         <div className="flex justify-between items-center pt-2">
+                           <div className="text-xs text-yellow-400 font-bold uppercase tracking-widest flex items-center gap-1"><Award size={14}/> Agent Commission</div>
+                           <div className="font-mono font-bold text-yellow-400">+{Math.floor(getEstimatedPremium() * 0.15)} USD-B/mo</div>
+                         </div>
+                       </div>
+
+                       <button onClick={handleDispatchAgentQuote} className="w-full sleek-btn text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 text-sm">
+                         <Send size={16} /> Dispatch Cryptographic Quote
+                       </button>
+                     </div>
+                   )}
+
+                   {agentDraftStep === 'dispatched' && (
+                     <div className="relative z-10 text-center py-8">
+                       <div className="w-24 h-24 glass-panel bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(52,211,153,0.3)]">
+                         <Send className="text-emerald-400" size={40} />
+                       </div>
+                       <h2 className="text-2xl font-bold text-white mb-2">Quote Dispatched!</h2>
+                       <p className="text-sm text-slate-400 mb-8 leading-relaxed">The policy payload has been routed to the client's wallet. Waiting for cryptographic signature and oracle binding.</p>
+                       
+                       <button onClick={() => setAgentTab('dashboard')} className="glass-panel bg-white/5 hover:bg-white/10 text-white font-bold py-3 px-6 rounded-xl transition-all border border-white/10">
+                         Return to Command Center
+                       </button>
+                     </div>
+                   )}
+
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            {/* VIEW: ONBOARDING & KYC */}
+            {activeTab === 'onboarding' && (
+              <div className="space-y-6 animate-in fade-in duration-500">
+                {pendingAgentQuote && (
+                  <div className="glass-panel bg-blue-900/20 border border-blue-500/30 p-4 rounded-2xl flex items-center justify-between shadow-[0_0_20px_rgba(59,130,246,0.2)] animate-pulse mb-6">
+                    <div className="flex items-center gap-3">
+                      <Inbox className="text-blue-400" size={24}/>
+                      <div>
+                        <div className="font-bold text-white text-sm">Quote Received from {pendingAgentQuote.agentId}</div>
+                        <div className="text-xs text-blue-200">Pre-configured {assetMeta[pendingAgentQuote.assetType].label} Policy</div>
+                      </div>
+                    </div>
+                    <button onClick={loadAgentQuote} className="glass-panel bg-blue-500/20 hover:bg-blue-500/40 text-blue-100 px-4 py-2 rounded-xl text-xs font-bold transition-colors">
+                      Review
+                    </button>
+                  </div>
+                )}
+              
+                <div className="text-center py-8">
+                  <div className="w-20 h-20 glass-panel rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+                    <LockKeyhole className="text-blue-400" size={36} />
+                  </div>
+                  <h1 className="text-3xl font-bold mb-3 text-white tracking-tight">Global Identity</h1>
+                  <p className="text-slate-400 text-sm px-4 leading-relaxed">Cryptographic proof of identity is required before interacting with Risk Bearer Bonds or minting policies.</p>
+                </div>
+                <form onSubmit={handleKYCSubmit} className="glass-panel rounded-3xl p-7 space-y-5 relative overflow-hidden">
+                  <div className="relative z-10">
+                    <label className="block text-xs font-medium text-slate-400 mb-1.5 ml-1">Legal Entity / Name</label>
+                    <input type="text" defaultValue="John Doe" className="w-full glass-input rounded-xl px-4 py-3.5" required />
+                  </div>
+                  <div className="relative z-10">
+                    <label className="block text-xs font-medium text-slate-400 mb-1.5 ml-1">Government ID Hash</label>
+                    <input type="text" defaultValue="0x8F9...A1B2" className="w-full glass-input rounded-xl px-4 py-3.5" required />
+                  </div>
+                  <button type="submit" className="w-full sleek-btn text-white font-bold py-4 mt-6 relative z-10 text-sm tracking-wide">
+                    Verify via ZK-Oracle
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {/* VIEW: DECENTRALIZED REGISTRY */}
+            {activeTab === 'registry' && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                
+                {/* Registry View Toggle */}
+                <div className="flex gap-2 glass-panel p-1 rounded-xl w-full sm:w-fit overflow-x-auto whitespace-nowrap hide-scrollbar relative z-20">
+                  <button onClick={() => setRegistryView('identity')} className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all flex items-center gap-1.5 ${registryView === 'identity' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}><UserRound size={14}/> My Identity</button>
+                  <button onClick={() => setRegistryView('agents')} className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all flex items-center gap-1.5 ${registryView === 'agents' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}><Briefcase size={14}/> Network Agents</button>
+                  <button onClick={() => setRegistryView('partners')} className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all flex items-center gap-1.5 ${registryView === 'partners' ? 'bg-white/10 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}><Database size={14}/> Oracle Partners</button>
+                </div>
+
+                {registryView === 'identity' && (
+                  <div className="glass-panel rounded-3xl p-7 relative overflow-hidden animate-in fade-in duration-300">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/20 blur-3xl rounded-full"></div>
+                    
+                    <div className="flex justify-between items-start mb-6 relative z-10">
+                      <div className="w-16 h-16 glass-panel rounded-2xl flex items-center justify-center shadow-[0_8px_16px_rgba(0,0,0,0.5)] border border-white/20">
+                        <UserRound className="text-blue-300" size={32} />
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs text-blue-200/70 font-bold tracking-widest uppercase mb-1">Network Identity</div>
+                        <div className="glass-panel px-3 py-1.5 rounded-full flex items-center gap-2 border-white/10 shadow-inner">
+                          <div className="w-2 h-2 rounded-full skeuo-led"></div>
+                          <span className="text-xs font-bold text-emerald-400">KYC Verified</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <h2 className="text-2xl font-bold text-white mb-1 relative z-10">John Doe</h2>
+                    <p className="text-xs font-mono text-slate-400 mb-6 relative z-10">DID: did:epol:0x8a9F...c3b2</p>
+
+                    <div className="grid grid-cols-2 gap-3 mb-6 relative z-10">
+                      <div className="glass-panel bg-white/5 rounded-2xl p-4 text-center border border-white/5">
+                        <Shield className="text-blue-400 mx-auto mb-2" size={20}/>
+                        <div className="text-2xl font-mono font-bold text-white">99.2</div>
+                        <div className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Trust Score</div>
+                      </div>
+                      <div className="glass-panel bg-white/5 rounded-2xl p-4 text-center border border-white/5">
+                        <Award className="text-emerald-400 mx-auto mb-2" size={20}/>
+                        <div className="text-2xl font-mono font-bold text-white">Tier 1</div>
+                        <div className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Steward Rank</div>
+                      </div>
+                    </div>
+
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 relative z-10 flex items-center gap-2 mt-8">
+                      <HardDrive size={14}/> My Connected Oracle Nodes
+                    </h3>
+                    
+                    <div className={`grid gap-3 relative z-10 ${isMobileView ? 'grid-cols-1' : 'grid-cols-2 md:grid-cols-3'}`}>
+                      {[
+                        { type: 'Auto', name: '2024 Tesla Model 3', desc: 'VIN: 1G1RD6... • Primary Mobility', icon: Car, color: 'text-blue-300', bg: 'bg-blue-500/10' },
+                        { type: 'Home', name: 'IoT Smart Home Hub', desc: 'MAC: 00:1A:2B... • Property Node', icon: Building, color: 'text-amber-300', bg: 'bg-amber-500/10' },
+                        { type: 'Health', name: 'Garmin Epix Pro', desc: 'UUID: 8F9A-2B... • Bio-Metric Oracle', icon: HeartPulse, color: 'text-rose-300', bg: 'bg-rose-500/10' },
+                        { type: 'Cyber', name: 'Ledger Nano X', desc: 'Pub: 0x71C... • Hardware Wallet Enclave', icon: Laptop, color: 'text-cyan-300', bg: 'bg-cyan-500/10' },
+                        { type: 'Property', name: 'Rolex Submariner', desc: 'RFID: 04:B2:7A... • Tracked Valuables', icon: Gem, color: 'text-orange-300', bg: 'bg-orange-500/10' },
+                        { type: 'Pet', name: 'Golden Retriever', desc: 'Microchip: 98102... • Biometric Collar', icon: Dog, color: 'text-orange-300', bg: 'bg-orange-500/10' },
+                        { type: 'Medical', name: 'Epic MyChart Interop', desc: 'EHR-FHIR: 10293... • Clinical Sync', icon: Stethoscope, color: 'text-blue-300', bg: 'bg-blue-500/10' },
+                        { type: 'Rx', name: 'PillPack Smart Dispenser', desc: 'ScriptID: RX-772... • Pharmacy Node', icon: Pill, color: 'text-teal-300', bg: 'bg-teal-500/10' },
+                        { type: 'Dental', name: 'Oral-B iO Series 10', desc: 'MAC: 88:1B... • Dental Telemetry', icon: Smile, color: 'text-pink-300', bg: 'bg-pink-500/10' },
+                        { type: 'Employment', name: 'ADP Payroll Oracle', desc: 'API: ADP-882... • Income Sync', icon: Briefcase, color: 'text-emerald-300', bg: 'bg-emerald-500/10' }
+                      ].map((node, idx) => (
+                        <div key={idx} className="glass-panel bg-white/[0.02] border-white/5 rounded-xl p-3 flex justify-between items-center group hover:bg-white/[0.05] transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-full glass-panel flex items-center justify-center ${node.bg}`}>
+                              <node.icon size={16} className={node.color} />
+                            </div>
+                            <div>
+                              <div className="text-sm font-bold text-slate-200 group-hover:text-white transition-colors">{node.name}</div>
+                              <div className="text-[10px] font-mono text-slate-500 mt-0.5">{node.desc}</div>
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end gap-1">
+                            <CheckCircle size={14} className="text-emerald-500" />
+                            <span className="text-[8px] uppercase tracking-widest text-emerald-400/70 font-bold">Synced</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {registryView === 'agents' && (
+                  <div className="glass-panel rounded-3xl p-7 relative overflow-hidden animate-in fade-in duration-300">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-yellow-500/10 blur-3xl rounded-full"></div>
+                    <div className="relative z-10 mb-6">
+                      <h2 className="text-2xl font-bold text-white mb-2">Verified Agent Brokers</h2>
+                      <p className="text-sm text-slate-400">Discover and connect with licensed decentralized insurance agents participating in the ePolicy DAO.</p>
+                    </div>
+                    <div className="space-y-4 relative z-10">
+                      {[
+                        { did: 'BrokerNode_0x4A9', rating: 99.8, clients: 142, licenses: 'CA, NY, FL', specialized: 'Mobility, Cyber' },
+                        { did: 'DAO_Underwriters_LLC', rating: 98.5, clients: 890, licenses: 'Global', specialized: 'Commercial, Property' },
+                        { did: 'CryptoRisk_Advisors', rating: 96.2, clients: 34, licenses: 'TX, NV', specialized: 'Health, Pet' }
+                      ].map((agent, i) => (
+                        <div key={i} className="glass-panel p-5 rounded-2xl border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full glass-panel bg-yellow-500/10 text-yellow-400 flex items-center justify-center border border-yellow-500/20">
+                              <Briefcase size={20}/>
+                            </div>
+                            <div>
+                              <div className="font-mono text-sm font-bold text-slate-200">{agent.did}</div>
+                              <div className="text-[10px] text-slate-400 mt-1">Specialties: <span className="text-slate-300">{agent.specialized}</span></div>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-3 gap-4 text-center md:text-right">
+                            <div>
+                              <div className="text-lg font-mono font-bold text-emerald-400">{agent.rating}</div>
+                              <div className="text-[9px] uppercase tracking-widest text-slate-500">DAO Rating</div>
+                            </div>
+                            <div>
+                              <div className="text-lg font-mono font-bold text-white">{agent.clients}</div>
+                              <div className="text-[9px] uppercase tracking-widest text-slate-500">Clients</div>
+                            </div>
+                            <div>
+                              <div className="text-sm font-bold text-slate-300 mt-1">{agent.licenses}</div>
+                              <div className="text-[9px] uppercase tracking-widest text-slate-500">Licensed</div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {registryView === 'partners' && (
+                  <div className="glass-panel rounded-3xl p-7 relative overflow-hidden animate-in fade-in duration-300">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 blur-3xl rounded-full"></div>
+                    <div className="relative z-10 mb-6">
+                      <h2 className="text-2xl font-bold text-white mb-2">Oracle Data Partners</h2>
+                      <p className="text-sm text-slate-400">The verified network of hardware and software API providers acting as truth oracles for parametric claims.</p>
+                    </div>
+                    <div className="grid gap-4 md:grid-cols-2 relative z-10">
+                      {[
+                        { name: 'Tesla Telematics Auth', category: 'Mobility', uptime: '99.99%', status: 'Active', icon: Car },
+                        { name: 'Apple HealthKit ZK-Relay', category: 'Bio-Metric', uptime: '100%', status: 'Active', icon: HeartPulse },
+                        { name: 'ADP Payroll API Node', category: 'Employment', uptime: '99.95%', status: 'Active', icon: Briefcase },
+                        { name: 'Chainalysis AML Oracle', category: 'Cyber', uptime: '100%', status: 'Active', icon: ShieldCheck }
+                      ].map((partner, i) => (
+                        <div key={i} className="glass-panel p-4 rounded-xl border border-white/5 flex justify-between items-center">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full glass-panel bg-white/5 text-slate-300 flex items-center justify-center">
+                              <partner.icon size={16}/>
+                            </div>
+                            <div>
+                              <div className="text-sm font-bold text-white">{partner.name}</div>
+                              <div className="text-[10px] text-slate-400 uppercase tracking-widest mt-0.5">{partner.category} Provider</div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* VIEW: MINT OMNI-POLICY */}
+            {activeTab === 'mint' && (
+              <div className="space-y-6 animate-in fade-in duration-500">
+                <div className="flex justify-between items-center bg-[#0a0c10]/50 p-3 rounded-2xl border border-white/5 mb-2">
+                  <div className="flex gap-2 items-center">
+                    <button 
+                      onClick={() => {
+                        if (policyStep === 'compliance') setPolicyStep('config');
+                        else if (policyStep === 'config') setPolicyStep('type');
+                        else {
+                          if (hasPolicy) setActiveTab('dashboard');
+                          else setActiveTab('onboarding');
+                        }
+                      }}
+                      className="text-slate-400 hover:text-white transition-colors flex items-center gap-1 text-xs font-bold"
+                    >
+                      <ArrowLeft size={14}/> Back
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold text-slate-500">
+                    <span className={policyStep === 'type' ? 'text-blue-400' : 'text-slate-600'}>Class</span>
+                    <ChevronRight size={10} />
+                    <span className={policyStep === 'config' ? 'text-blue-400' : 'text-slate-600'}>Params</span>
+                    <ChevronRight size={10} />
+                    <span className={policyStep === 'compliance' ? 'text-blue-400' : 'text-slate-600'}>App</span>
+                    <ChevronRight size={10} />
+                    <span className={policyStep === 'ready' ? 'text-emerald-400' : 'text-slate-600'}>Bound</span>
+                  </div>
+                </div>
+
+                <div className="glass-panel rounded-3xl p-7 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 blur-3xl rounded-full"></div>
+                  
+                  {policyStep === 'type' && (
+                    <div className="animate-in fade-in duration-300 relative z-10">
+                      <h2 className="text-2xl font-bold mb-2 text-white">Select Policy Class</h2>
+                      <div className={`grid gap-4 ${isMobileView ? 'grid-cols-2' : 'grid-cols-3 md:grid-cols-5'}`}>
+                        {Object.entries(assetMeta).map(([typeId, meta]) => (
+                          <div key={typeId} onClick={() => { setSelectedAssetType(typeId); setPolicyStep('config'); }} className="glass-panel bg-white/5 hover:bg-white/10 border-white/10 p-5 rounded-2xl cursor-pointer transition-all flex flex-col items-center text-center group">
+                            <meta.icon size={32} className="text-blue-400 mb-3 group-hover:scale-110 transition-transform" />
+                            <div className="font-bold text-white text-sm">{meta.label}</div>
+                            <div className="text-[10px] text-slate-400 mt-1">{meta.sub}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {policyStep === 'config' && (
+                    <div className="animate-in fade-in duration-300 relative z-10 space-y-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full glass-panel bg-blue-500/20 flex items-center justify-center text-blue-300">
+                          {React.createElement(assetMeta[selectedAssetType].icon, { size: 20 })}
+                        </div>
+                        <h2 className="text-xl font-bold text-white">Configure Parameters</h2>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-slate-400 mb-1.5 ml-1">Limit Tier</label>
+                          <select className="w-full glass-input rounded-xl px-3 py-3 text-slate-200 text-sm" value={policyConfig.tier} onChange={(e) => setPolicyConfig({...policyConfig, tier: e.target.value})}>
+                            <option value="standard">Standard Limit</option>
+                            <option value="premium">Premium Limit</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-400 mb-1.5 ml-1">Deductible</label>
+                          <select className="w-full glass-input rounded-xl px-3 py-3 text-slate-200 text-sm" value={policyConfig.deductible} onChange={(e) => setPolicyConfig({...policyConfig, deductible: Number(e.target.value)})}>
+                            <option value={1000}>1,000 USD-B</option>
+                            <option value={500}>500 USD-B</option>
+                            <option value={250}>250 USD-B</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="glass-panel-highlight rounded-2xl p-4 mt-6 flex justify-between items-center border border-blue-500/30">
+                        <div>
+                          <div className="text-xs text-blue-200/70 font-bold uppercase mb-1">Live Estimate</div>
+                          <div className="text-2xl font-mono font-bold text-white">{getEstimatedPremium()} <span className="text-sm font-sans text-blue-300">USD-B/mo</span></div>
+                        </div>
+                        <button onClick={() => setPolicyStep('compliance')} className="sleek-btn text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 text-sm">
+                          Next <ArrowRightLeft size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {policyStep === 'compliance' && (
+                    <div className="animate-in slide-in-from-right duration-300 relative z-10 space-y-6">
+                      <h2 className="text-xl font-bold text-white">Application Verification</h2>
+                      <div className="space-y-4">
+                        <input type="text" placeholder={assetMeta[selectedAssetType].appFields[0]} className="w-full glass-input rounded-xl px-4 py-3 text-sm" value={appData.field1} onChange={e => setAppData({...appData, field1: e.target.value})} />
+                        <input type="text" placeholder={assetMeta[selectedAssetType].appFields[1]} className="w-full glass-input rounded-xl px-4 py-3 text-sm" value={appData.field2} onChange={e => setAppData({...appData, field2: e.target.value})} />
+                        
+                        <button onClick={handleVerifyApplication} className="w-full glass-panel bg-blue-500/20 text-blue-200 font-semibold py-3 rounded-xl text-sm">
+                          {isVerifyingData ? 'Querying Oracles...' : 'Verify Data'}
+                        </button>
+
+                        <label className="flex items-start gap-3 cursor-pointer group">
+                          <input type="checkbox" className="mt-1" checked={complianceChecked.reg1} onChange={(e) => setComplianceChecked({...complianceChecked, reg1: e.target.checked})} />
+                          <span className="text-xs text-slate-300 leading-tight">I cryptographically consent to all regulatory terms.</span>
+                        </label>
+                        <label className="flex items-start gap-3 cursor-pointer group">
+                          <input type="checkbox" className="mt-1" checked={complianceChecked.reg2} onChange={(e) => setComplianceChecked({...complianceChecked, reg2: e.target.checked})} />
+                          <span className="text-xs text-slate-300 leading-tight">I acknowledge the automated smart contract execution.</span>
+                        </label>
+                      </div>
+
+                      <button onClick={handleGeneratePolicy} disabled={!complianceChecked.reg1 || !complianceChecked.reg2 || !isDataVerified} className="w-full sleek-btn text-white font-bold py-4 rounded-xl text-sm disabled:opacity-50">
+                        Bind Policy
+                      </button>
+                    </div>
+                  )}
+
+                  {policyStep === 'generating' && (
+                    <div className="py-12 flex flex-col items-center justify-center text-center">
+                      <Loader2 size={40} className="animate-spin text-blue-400 mb-4" />
+                      <h3 className="text-xl font-bold text-white mb-2">Compiling Smart Contract</h3>
+                      <p className="text-sm text-slate-400 font-mono">Minting dNFT Policy...</p>
+                    </div>
+                  )}
+
+                  {policyStep === 'ready' && (
+                    <div className="animate-in slide-in-from-bottom-4 duration-500 relative z-10 text-center">
+                      <div className="w-16 h-16 glass-panel bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <FileCheck className="text-emerald-400" size={32} />
+                      </div>
+                      <h2 className="text-2xl font-bold mb-6 text-white">Policy Bound Successfully</h2>
+                      <button onClick={() => { setHasPolicy(true); setActiveTab('dashboard'); }} className="w-full sleek-btn text-white font-bold py-4 rounded-xl text-sm">
+                        Enter Dashboard
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* VIEW: ASSET DASHBOARD */}
+            {activeTab === 'dashboard' && hasPolicy && (
+              <div className="space-y-6 animate-in fade-in duration-500">
+                <div className="glass-panel px-4 py-2 rounded-2xl flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {React.createElement(assetMeta[selectedAssetType].icon, { size: 18, className: "text-blue-400" })}
+                    <span className="font-bold text-white">{assetMeta[selectedAssetType].label} Policy</span>
+                  </div>
+                  <span className="text-xs text-slate-400 font-mono">ORACLE SYNCED</span>
+                </div>
+
+                <div className="glass-panel-highlight rounded-3xl p-7 relative overflow-hidden">
+                  <h3 className="text-blue-100/80 text-sm font-medium">Dynamic Premium</h3>
+                  <div className="text-5xl font-bold font-mono text-white mt-2 drop-shadow-md">
+                    {premium.dynamic} <span className="text-lg text-blue-200/80 font-sans tracking-normal">USD-B/mo</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="glass-panel rounded-3xl p-5 flex flex-col items-center">
+                    <div className="text-slate-400 text-xs mb-2">{assetMeta[selectedAssetType].metricLabel}</div>
+                    <div className="text-3xl font-mono font-bold text-white">{assetMeta[selectedAssetType].getPrimaryVal(telemetry)}</div>
+                  </div>
+                  <div className="glass-panel rounded-3xl p-5 flex flex-col items-center">
+                    <div className="text-slate-400 text-xs mb-2">{telemetry[selectedAssetType].metric1}</div>
+                    <div className="text-2xl font-mono font-bold text-white">{telemetry[selectedAssetType].val1}</div>
+                  </div>
+                </div>
+
+                <button onClick={handleParametricClaim} className="sleek-btn text-white font-bold py-4 w-full rounded-xl text-sm flex items-center justify-center gap-2">
+                  <Activity size={18} /> Request Oracle Verification
+                </button>
+              </div>
+            )}
+
+            {/* VIEW: CAPITAL / BONDS */}
+            {activeTab === 'capital' && (
+              <div className="space-y-6 animate-in fade-in duration-500">
+                <div className="glass-panel rounded-3xl p-6 relative overflow-hidden">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Wallet size={18} className="text-blue-300" />
+                    <h3 className="text-slate-200 text-sm font-semibold">ePurse Balance</h3>
+                  </div>
+                  <div className="text-4xl font-mono font-bold text-white mb-4">
+                    {balances.usdB.toLocaleString()} <span className="text-sm text-slate-400">USD-B</span>
+                  </div>
+                  <div className="flex gap-3">
+                    <button onClick={() => setShowFiatRamp(true)} className="flex-1 glass-panel bg-white/10 text-white font-semibold py-3 rounded-xl text-sm">Deposit</button>
+                    <button className="flex-1 glass-panel bg-white/5 text-white font-semibold py-3 rounded-xl text-sm">Withdraw</button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="glass-panel p-5 rounded-2xl flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                      <Car size={16} className="text-blue-400"/> 
+                      <span className="font-bold text-white">Mobility Pool</span>
+                    </div>
+                    <button onClick={() => setStakingModal({ isOpen: true, pool: 'Mobility Risk Pool', apy: '8.5%' })} className="glass-panel bg-blue-500/20 text-blue-100 px-4 py-2 rounded-xl text-xs font-bold">8.5% APY</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+          </>
+        )}
+      </main>
+
+      {/* FIAT ON-RAMP MODAL */}
+      {showFiatRamp && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowFiatRamp(false)}></div>
+          <div className="glass-panel bg-[#0b101e]/90 w-full max-w-sm rounded-3xl p-6 relative z-10 border border-white/10">
+            <h3 className="text-xl font-bold text-white mb-4">Fund ePurse</h3>
+            <input type="number" value={fiatAmount} onChange={(e) => setFiatAmount(e.target.value)} className="w-full glass-input rounded-xl px-4 py-3.5 text-white font-mono text-lg mb-4" />
+            <button onClick={() => {
+              setIsProcessing(true);
+              setTimeout(() => {
+                setBalances(prev => ({ ...prev, usdB: prev.usdB + Number(fiatAmount) }));
+                setIsProcessing(false); setShowFiatRamp(false);
+                showToast(`Funded ePurse.`);
+              }, 1500);
+            }} className="w-full sleek-btn text-white font-bold py-4 rounded-xl text-sm disabled:opacity-50">
+              {isProcessing ? 'Processing...' : `Pay ${fiatAmount} USD`}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* GLOBAL BOTTOM NAVIGATION */}
+      {!isAdminMode && (
+        <div className="fixed bottom-0 w-full z-50">
+          <div className="glass-panel bg-[#0b101e]/60 border-b-0 border-x-0 border-t border-white/10 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
+            <div className={`mx-auto flex justify-between px-2 py-3 transition-all duration-500 ${isMobileView ? 'max-w-md' : 'max-w-6xl'}`}>
+              <button onClick={() => setActiveTab('onboarding')} className={`flex flex-1 flex-col items-center p-2 rounded-2xl transition-all ${activeTab === 'onboarding' || activeTab === 'mint' || activeTab === 'dashboard' ? 'text-white glass-panel bg-white/10' : 'text-slate-500'}`}>
+                <ShieldCheck size={20} className="mb-1" />
+                <span className="text-[9px] font-bold">Assets</span>
+              </button>
+              <button onClick={() => setActiveTab('capital')} className={`flex flex-1 flex-col items-center p-2 rounded-2xl transition-all ${activeTab === 'capital' ? 'text-white glass-panel bg-white/10' : 'text-slate-500'}`}>
+                <Landmark size={20} className="mb-1" />
+                <span className="text-[9px] font-bold">Capital</span>
+              </button>
+              <button onClick={() => setActiveTab('registry')} className={`flex flex-1 flex-col items-center p-2 rounded-2xl transition-all ${activeTab === 'registry' ? 'text-white glass-panel bg-white/10' : 'text-slate-500'}`}>
+                <UserRound size={20} className="mb-1" />
+                <span className="text-[9px] font-bold">Identity</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+    </div>
+  );
+}
